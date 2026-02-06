@@ -1,0 +1,42 @@
+﻿
+> ghargo@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 2.7s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/17) ...
+  Generating static pages using 11 workers (4/17) 
+  Generating static pages using 11 workers (8/17) 
+  Generating static pages using 11 workers (12/17) 
+Γ£ô Generating static pages using 11 workers (17/17) in 482.2ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /_not-found
+Γö£ ╞Æ /[lang]
+Γö£ ╞Æ /[lang]/auth/callback
+Γö£ ΓùÅ /[lang]/auth/login
+Γöé Γö£ /en/auth/login
+Γöé Γö£ /hi/auth/login
+Γöé Γöö /as/auth/login
+Γö£ ΓùÅ /[lang]/auth/signup
+Γöé Γö£ /en/auth/signup
+Γöé Γö£ /hi/auth/signup
+Γöé Γöö /as/auth/signup
+Γö£ ╞Æ /[lang]/services
+Γö£ ╞Æ /[lang]/services/[slug]
+Γö£ ╞Æ /auth/callback/route
+Γöö Γùï /auth/login
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+ΓùÅ  (SSG)      prerendered as static HTML (uses generateStaticParams)
+╞Æ  (Dynamic)  server-rendered on demand
+

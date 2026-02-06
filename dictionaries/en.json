@@ -1,0 +1,33 @@
+{
+    "common": {
+        "login": "Login",
+        "signup": "Sign Up",
+        "dashboard": "Dashboard",
+        "home": "Home",
+        "about": "About Us",
+        "services": "Services",
+        "become_provider": "Become a Provider",
+        "contact": "Contact"
+    },
+    "landing": {
+        "hero_title": "Expert Home Services At Your Doorstep",
+        "hero_subtitle": "Connect with trusted local professionals in Guwahati.",
+        "find_expert": "Find Expert",
+        "search_placeholder": "What service do you need?",
+        "verified_experts": "Verified Experts",
+        "on_time": "On-time Service"
+    },
+    "auth": {
+        "welcome_back": "Welcome Back",
+        "login_subtitle": "Login to manage your bookings and services",
+        "create_account": "Create Account",
+        "signup_subtitle": "Join GharGo and find trusted local services",
+        "or_continue": "Or continue with email",
+        "email": "Email",
+        "password": "Password",
+        "full_name": "Full Name",
+        "forgot_password": "Forgot your password?",
+        "already_have_account": "Already have an account?",
+        "dont_have_account": "Don't have an account?"
+    }
+}
