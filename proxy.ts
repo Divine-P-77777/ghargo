@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { createServerClient } from '@supabase/ssr'
 import { i18n } from './i18n-config'
 
 function getLocale(request: NextRequest): string {
@@ -11,24 +11,73 @@ function getLocale(request: NextRequest): string {
 }
 
 export async function proxy(request: NextRequest) {
-    // 1. Handle Supabase Session (for Auth)
-    // We need to await this because it might set cookies on the response
-    const response = await updateSession(request)
+    let supabaseResponse = NextResponse.next({
+        request,
+    })
 
-    // 2. Handle I18n Routing
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll()
+                },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value }) =>
+                        request.cookies.set(name, value)
+                    )
+                    supabaseResponse = NextResponse.next({
+                        request,
+                    })
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        supabaseResponse.cookies.set(name, value, options)
+                    )
+                },
+            },
+        }
+    )
+
+    // Helper to get locale for redirects
+    const getRedirectUrl = (path: string) => {
+        let locale = getLocale(request)
+        // Check if path already has locale
+        const segments = request.nextUrl.pathname.split('/')
+        if (i18n.locales.includes(segments[1] as any)) {
+            locale = segments[1]
+        }
+        return new URL(`/${locale}${path}`, request.url)
+    }
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    // RBAC Logic
     const pathname = request.nextUrl.pathname
 
-    // Check if there is any supported locale in the pathname
+    // 1. Protected Admin Routes
+    if (pathname.includes('/admin') && user?.user_metadata?.role !== 'admin') {
+        return NextResponse.redirect(getRedirectUrl('/'))
+    }
+
+    // 2. Protected Provider Routes
+    if (pathname.includes('/provider') && user?.user_metadata?.role !== 'provider') {
+        return NextResponse.redirect(getRedirectUrl('/'))
+    }
+
+    // 3. Protected Dashboard Routes (General Auth)
+    if (pathname.includes('/dashboard') && !user) {
+        return NextResponse.redirect(getRedirectUrl('/auth/login'))
+    }
+
+    // I18n Routing
     const pathnameIsMissingLocale = i18n.locales.every(
         (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
     )
 
-    // Redirect if there is no locale
     if (pathnameIsMissingLocale) {
         const locale = getLocale(request)
-
-        // e.g. incoming request is /services
-        // The new URL is now /en/services
         return NextResponse.redirect(
             new URL(
                 `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
@@ -37,10 +86,9 @@ export async function proxy(request: NextRequest) {
         )
     }
 
-    return response
+    return supabaseResponse
 }
 
 export const config = {
-    // Matcher ignoring `_next` and other static files
     matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }

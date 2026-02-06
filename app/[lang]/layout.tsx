@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "@/app/globals.css";
 import { i18n } from "@/i18n-config";
+import ToastProvider from "@/components/providers/ToastProvider";
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -36,7 +39,13 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} antialiased bg-gray-50 text-gray-900`}
       >
-        {children}
+        <SmoothScrollProvider>
+          <AuthProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </AuthProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );
