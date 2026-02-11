@@ -26,6 +26,7 @@ export async function signup(formData: FormData) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
     const fullName = formData.get('fullName') as string
+    const role = formData.get('role') as string || 'user'
 
     const supabase = await createClient()
 
@@ -36,6 +37,7 @@ export async function signup(formData: FormData) {
             emailRedirectTo: `${origin}/auth/callback`,
             data: {
                 full_name: fullName,
+                role: role,
             }
         },
     })
@@ -48,13 +50,12 @@ export async function signup(formData: FormData) {
 }
 
 export async function loginWithGoogle() {
-    const origin = (await headers()).get('origin')
     const supabase = await createClient()
 
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: `${origin}/auth/callback`,
+            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
         },
     })
 

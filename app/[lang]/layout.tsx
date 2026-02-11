@@ -36,6 +36,8 @@ export default async function RootLayout({
   const { lang } = await params;
   return (
     <html lang={lang}>
+      <meta name="theme-color"
+        content="#1bb566" />
       <body
         className={`${outfit.variable} antialiased bg-gray-50 text-gray-900`}
       >

@@ -1,10 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Calendar } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
-import { createBooking } from "@/app/[lang]/services/actions"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { notFound } from "next/navigation"
+import { BookingForm } from "./BookingForm"
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
@@ -61,59 +56,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
                 <div className="bg-card border rounded-xl shadow-lg p-6">
                     <h2 className="text-2xl font-bold mb-6">Book Service</h2>
-                    <form action={createBooking} className="space-y-4">
-                        <input type="hidden" name="serviceId" value={displayService.id} />
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Select Date</label>
-                            <div className="relative">
-                                <Input
-                                    type="date"
-                                    name="date"
-                                    required
-                                    className="w-full"
-                                />
-                                <Calendar className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Select Time Slot</label>
-                            <select
-                                name="timeSlot"
-                                required
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <option value="">Select a slot</option>
-                                <option value="09-11">09:00 AM - 11:00 AM</option>
-                                <option value="11-01">11:00 AM - 01:00 PM</option>
-                                <option value="14-16">02:00 PM - 04:00 PM</option>
-                                <option value="16-18">04:00 PM - 06:00 PM</option>
-                            </select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Address</label>
-                            <Textarea
-                                name="address"
-                                placeholder="Your full address"
-                                required
-                                className="min-h-[60px]"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Problem Description (Optional)</label>
-                            <Textarea
-                                name="notes"
-                                placeholder="Describe the issue..."
-                                className="min-h-[80px]"
-                            />
-                        </div>
-
-                        <Button type="submit" className="w-full text-lg h-12">Confirm Booking</Button>
-                        <p className="text-xs text-center text-muted-foreground">No payment required now. Pay after service.</p>
-                    </form>
+                    <BookingForm serviceId={displayService.id} />
                 </div>
             </div>
         </div>

@@ -64,6 +64,7 @@ create policy "Only admins can insert/update services."
 create table public.bookings (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
+  provider_id uuid references public.profiles(id) on delete set null, -- NEW: Assigned Provider
   service_id uuid references public.services(id) on delete set null,
   booking_date date not null,
   time_slot text not null,
@@ -85,12 +86,58 @@ create policy "Users can create their own bookings."
   on public.bookings for insert
   with check ( auth.uid() = user_id );
 
-create policy "Admins and Providers can view all bookings."
+-- Provider Policies
+create policy "Providers can view available (pending) bookings."
+  on public.bookings for select
+  using ( 
+    status = 'pending' 
+    and exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'provider'
+    )
+  );
+
+create policy "Providers can view their assigned bookings."
+  on public.bookings for select
+  using ( 
+    provider_id = auth.uid()
+    and exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'provider'
+    )
+  );
+
+create policy "Providers can update their assigned bookings."
+  on public.bookings for update
+  using ( 
+    provider_id = auth.uid()
+    and exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'provider'
+    )
+  );
+  
+-- Allow Providers to claim a booking (update provider_id if null)
+create policy "Providers can claim pending bookings."
+  on public.bookings for update
+  using ( 
+     status = 'pending'
+     and provider_id is null
+     and exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'provider'
+    )
+  )
+  with check (
+    provider_id = auth.uid()
+  );
+
+create policy "Admins can view all bookings."
   on public.bookings for select
   using (
     exists (
       select 1 from public.profiles
-      where profiles.id = auth.uid() and (profiles.role = 'admin' or profiles.role = 'provider')
+      where profiles.id = auth.uid() and profiles.role = 'admin'
     )
   );
 

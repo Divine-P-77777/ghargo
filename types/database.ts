@@ -24,6 +24,7 @@ export interface Service {
 export interface Booking {
     id: string
     user_id: string
+    provider_id: string | null
     service_id: string | null
     booking_date: string
     time_slot: string

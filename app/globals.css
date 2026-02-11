@@ -1,70 +1,84 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc; /* Slate 50 */
-  --foreground: #0f172a; /* Slate 900 */
-  
-  --primary: #4338ca; /* Indigo 700 */
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  --primary: #4f46e5;
+  /* Indigo 600 - Main Blue */
   --primary-foreground: #ffffff;
-  
-  --secondary: #64748b; /* Slate 500 */
+
+  --secondary: #8b5cf6;
+  /* Violet 500 */
   --secondary-foreground: #ffffff;
-  
-  --expert: #0d9488; /* Teal 600 - for trusted providers */
+
+  --accent: #1e1b4b;
+  /* Dark Blue */
+  --accent-foreground: #ffffff;
+
+  --expert: #0d9488;
   --expert-foreground: #ffffff;
-  
-  --warning: #f59e0b; /* Amber 500 */
-  --destructive: #ef4444; /* Red 500 */
-  
+
+  --warning: #f59e0b;
+  --destructive: #ef4444;
+
   --card: #ffffff;
   --card-foreground: #0f172a;
-  
-  --border: #e2e8f0; /* Slate 200 */
+
+  --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #4338ca;
+  --ring: #4f46e5;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a; /* Slate 900 */
-    --foreground: #f8fafc; /* Slate 50 */
-    
-    --primary: #6366f1; /* Indigo 500 */
+    --background: #ffffff;
+    /* Force White in Dark Mode too as per request? Or allow dark? User said "entire theme color into bg white" */
+    --foreground: #0f172a;
+
+    /* Keeping consistent for now as user asked for "entire theme" */
+    --primary: #4f46e5;
     --primary-foreground: #ffffff;
-    
-    --secondary: #94a3b8; /* Slate 400 */
-    --secondary-foreground: #0f172a;
-    
-    --expert: #14b8a6; /* Teal 500 */
-    --expert-foreground: #ffffff;
-    
-    --card: #1e293b; /* Slate 800 */
-    --card-foreground: #f8fafc;
-    
-    --border: #334155; /* Slate 700 */
-    --input: #334155;
-    --ring: #6366f1;
+
+    --secondary: #8b5cf6;
+    --secondary-foreground: #ffffff;
+
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #4f46e5;
   }
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #2563eb, #7c3aed);
+  /* Blue to Violet */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 
 @theme {
   --font-sans: var(--font-outfit);
-  
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  
+
   --color-expert: var(--expert);
   --color-expert-foreground: var(--expert-foreground);
-  
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -80,13 +94,16 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--secondary);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }

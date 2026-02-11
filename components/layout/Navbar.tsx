@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"
 import { User } from "lucide-react"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
 
 export async function Navbar() {
     const supabase = await createClient()
@@ -11,7 +12,7 @@ export async function Navbar() {
         <nav className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-8">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
-                    <span className="font-bold text-xl sm:text-2xl text-primary font-heading">GharGo</span>
+                    <span className="font-bold text-xl sm:text-2xl font-heading text-gradient">GharGo</span>
                 </Link>
                 <div className="hidden md:flex md:gap-x-6 text-sm font-medium">
                     <Link href="/services" className="transition-colors hover:text-primary">Services</Link>
@@ -19,6 +20,7 @@ export async function Navbar() {
                     <Link href="/about" className="transition-colors hover:text-primary">About Us</Link>
                 </div>
                 <div className="flex items-center gap-x-4">
+                    <LanguageSwitcher />
                     {user ? (
                         <div className="flex items-center gap-x-4">
                             <Link href="/dashboard">
