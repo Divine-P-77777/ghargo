@@ -6,4 +6,9 @@ const dictionaries = {
     as: () => import('./dictionaries/as.json').then((module) => module.default),
 }
 
-export const getDictionary = async (locale: 'en' | 'hi' | 'as') => dictionaries[locale]()
+export const getDictionary = async (locale: string) => {
+    if (['en', 'hi', 'as'].includes(locale)) {
+        return dictionaries[locale as 'en' | 'hi' | 'as']()
+    }
+    return dictionaries['en']()
+}

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link"
-import { login, loginWithGoogle } from "@/app/[lang]/auth/actions"
+import { login, loginWithGoogle } from "@/app/auth/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, Lock } from "lucide-react"

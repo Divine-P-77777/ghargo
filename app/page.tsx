@@ -1,10 +1,11 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Zap, Droplets, Sparkles, Car, Hammer, Paintbrush, Search, Shield, Clock, Heart } from "lucide-react"
+
+import { Zap, Droplets, Sparkles, Car, Hammer, Paintbrush, Shield, Clock, Heart } from "lucide-react"
 import Link from "next/link"
 import { useLanguage } from "@/components/providers/LanguageProvider"
+import { Hero } from "@/components/home/Hero"
 
 export default function LandingPage() {
     const { dictionary: dict } = useLanguage()
@@ -12,39 +13,7 @@ export default function LandingPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="relative py-20 md:py-32 overflow-hidden bg-primary/5">
-                <div className="absolute inset-0 bg-grid-slate-200/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] pointer-events-none" />
-                <div className="container px-4 md:px-8 relative z-10 max-w-screen-2xl">
-                    <div className="flex flex-col items-center text-center space-y-8 max-w-3xl mx-auto">
-                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary font-heading leading-tight">
-                            {dict.landing?.hero_title || "Connecting You with Trusted"} <br className="hidden md:inline" />
-                            <span className="text-gradient">
-                                GharGo
-                            </span>
-                        </h1>
-                        <p className="text-xl text-muted-foreground md:w-3/4">
-                            {dict.landing?.hero_subtitle || "Expert local services at your doorstep. Verified, Punctual, and Transparent."}
-                        </p>
-
-                        <div className="w-full max-w-md flex flex-col sm:flex-row gap-3">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                                <Input placeholder={dict.landing?.search_placeholder || "What do you need help with?"} className="pl-10 h-11 text-lg shadow-sm" />
-                            </div>
-                            <Button size="lg" className="h-11 px-8 shadow-md">{dict.landing?.find_expert || "Find Expert"}</Button>
-                        </div>
-
-                        <div className="flex gap-4 pt-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1"><Shield className="h-4 w-4 text-expert" /> {dict.landing?.verified_experts || "Verified & Insured"}</div>
-                            <div className="flex items-center gap-1"><Clock className="h-4 w-4 text-expert" /> {dict.landing?.on_time || "On-Time Service"}</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Abstract Shapes */}
-                <div className="absolute -top-24 -left-24 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
-                <div className="absolute top-0 -right-4 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
-            </section>
+            <Hero />
 
             {/* Services Grid */}
             <section className="py-16 md:py-24 bg-background">
