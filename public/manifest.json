@@ -1,0 +1,28 @@
+{
+    "name": "GharGo - Hyperlocal Service Marketplace",
+    "short_name": "GharGo",
+    "description": "Connect with trusted local service providers for everyday household needs in Guwahati.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4f46e5",
+    "orientation": "portrait-primary",
+    "categories": [
+        "business",
+        "lifestyle",
+        "utilities"
+    ],
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "48x48",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "/favicon.ico",
+            "sizes": "48x48",
+            "type": "image/x-icon",
+            "purpose": "maskable"
+        }
+    ]
+}

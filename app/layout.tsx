@@ -21,9 +21,38 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-    title: "GharGo - Hyperlocal Service Marketplace",
-    description: "Connect with trusted local service providers for everyday household needs in Guwahati.",
+    title: {
+        default: "GharGo - Hyperlocal Service Marketplace",
+        template: "%s | GharGo",
+    },
+    description: "Connect with trusted local service providers for everyday household needs in Guwahati. Book electricians, plumbers, cleaners & more.",
     manifest: "/manifest.json",
+    keywords: ["home services", "GharGo", "Guwahati", "hyperlocal", "electrician", "plumber", "cleaning", "service marketplace", "household services"],
+    authors: [{ name: "GharGo" }],
+    creator: "GharGo",
+    openGraph: {
+        type: "website",
+        locale: "en_IN",
+        siteName: "GharGo",
+        title: "GharGo - Hyperlocal Service Marketplace",
+        description: "Connect with trusted local service providers for everyday household needs in Guwahati.",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "GharGo - Hyperlocal Service Marketplace",
+        description: "Connect with trusted local service providers for everyday household needs in Guwahati.",
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
 };
 
 export const viewport: Viewport = {
