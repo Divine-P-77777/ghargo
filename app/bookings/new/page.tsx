@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/components/providers/AuthProvider"
@@ -83,7 +83,8 @@ function dateLabel(d: Date): { top: string; bot: string } {
 
 function toYMD(d: Date) { return d.toISOString().split('T')[0] }
 
-export default function NewBookingPage() {
+// --- Refactored Content Component ---
+function BookingFormContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
@@ -465,5 +466,18 @@ export default function NewBookingPage() {
                 </form>
             </div>
         </div>
+    )
+}
+
+// --- Main Page Component ---
+export default function NewBookingPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
+            </div>
+        }>
+            <BookingFormContent />
+        </Suspense>
     )
 }

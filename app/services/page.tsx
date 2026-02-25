@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -20,7 +20,8 @@ interface Provider {
 
 const CATEGORIES = ["All", "Electrician", "Plumber", "Cleaner", "Carpenter", "Painter", "Mechanic", "AC Repair", "Pest Control", "Other"]
 
-export default function ServicesPage() {
+// --- Refactored Content Component ---
+function ServicesContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const [providers, setProviders] = useState<Provider[]>([])
@@ -144,6 +145,19 @@ export default function ServicesPage() {
                 )}
             </div>
         </div>
+    )
+}
+
+// --- Main Page Component ---
+export default function ServicesPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen py-20 bg-slate-50 flex items-center justify-center">
+                <div className="animate-pulse text-slate-400">Loading services...</div>
+            </div>
+        }>
+            <ServicesContent />
+        </Suspense>
     )
 }
 
