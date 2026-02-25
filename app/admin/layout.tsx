@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, Shield, ChevronLeft, UserPlus } from "lucide-react"
+import { LayoutDashboard, Users, Shield, ChevronLeft, UserPlus, CalendarCheck } from "lucide-react"
 
 const adminLinks = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/manage", label: "Manage Providers", icon: UserPlus },
-    { href: "/admin/providers", label: "Verification (old)", icon: Users },
+    { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
+    { href: "/admin/users", label: "Users", icon: Users },
 ]
 
 // Allowed admin emails from env (NEXT_PUBLIC so the client bundle can read it)

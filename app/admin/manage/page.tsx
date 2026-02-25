@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
     Plus, Search, ChevronLeft, ChevronRight,
-    Trash2, CheckCircle, Clock, X, Upload, User
+    Trash2, CheckCircle, Clock, X, Upload, User, Pencil
 } from "lucide-react"
 
 interface Provider {
@@ -20,6 +20,8 @@ interface Provider {
     avatar_url: string | null
     is_approved: boolean
     created_at: string
+    available_days: number[] | null
+    available_time_slots: string[] | null
 }
 
 const PAGE_SIZE = 10
@@ -35,6 +37,18 @@ const emptyForm = {
     doc_type: 'Aadhar', doc_number: '', address: ''
 }
 
+const DEFAULT_AVAILABLE_DAYS = [1, 2, 3, 4, 5, 6] // Mon–Sat
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+const ALL_TIME_SLOTS = [
+    "08:00 AM – 10:00 AM",
+    "10:00 AM – 12:00 PM",
+    "12:00 PM – 02:00 PM",
+    "02:00 PM – 04:00 PM",
+    "04:00 PM – 06:00 PM",
+    "06:00 PM – 08:00 PM",
+]
+
 export default function ManageProvidersPage() {
     const [providers, setProviders] = useState<Provider[]>([])
     const [loading, setLoading] = useState(true)
@@ -42,11 +56,14 @@ export default function ManageProvidersPage() {
     const [filter, setFilter] = useState<'all' | 'approved' | 'pending'>('all')
     const [page, setPage] = useState(1)
     const [showModal, setShowModal] = useState(false)
+    const [editingProvider, setEditingProvider] = useState<Provider | null>(null) // null = add mode
     const [actionLoading, setActionLoading] = useState<string | null>(null)
 
     // Form state
     const [form, setForm] = useState(emptyForm)
     const [otherServiceType, setOtherServiceType] = useState('')
+    const [availableDays, setAvailableDays] = useState<number[]>(DEFAULT_AVAILABLE_DAYS)
+    const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>(ALL_TIME_SLOTS)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [formLoading, setFormLoading] = useState(false)
@@ -97,6 +114,27 @@ export default function ManageProvidersPage() {
         setActionLoading(null)
     }
 
+    function openEdit(p: Provider) {
+        setEditingProvider(p)
+        setForm({
+            full_name: p.full_name,
+            email: p.email || '',
+            phone: p.phone || '',
+            service_type: SERVICE_TYPES.includes(p.service_type || '') ? (p.service_type || 'Other') : 'Other',
+            hourly_rate: p.hourly_rate?.toString() || '',
+            doc_type: 'Aadhar',
+            doc_number: '',
+            address: '',
+        })
+        setOtherServiceType(SERVICE_TYPES.includes(p.service_type || '') ? '' : (p.service_type || ''))
+        setAvailableDays(p.available_days?.length ? p.available_days : DEFAULT_AVAILABLE_DAYS)
+        setAvailableTimeSlots(p.available_time_slots?.length ? p.available_time_slots : ALL_TIME_SLOTS)
+        setImagePreview(p.avatar_url || null)
+        setImageFile(null)
+        setFormError('')
+        setShowModal(true)
+    }
+
     async function handleAddProvider(e: React.FormEvent) {
         e.preventDefault()
         setFormLoading(true)
@@ -108,7 +146,7 @@ export default function ManageProvidersPage() {
             return
         }
 
-        let avatar_url: string | null = null
+        let avatar_url: string | null = editingProvider?.avatar_url ?? null
 
         if (imageFile) {
             const ext = imageFile.name.split('.').pop()
@@ -126,7 +164,7 @@ export default function ManageProvidersPage() {
             avatar_url = urlData.publicUrl
         }
 
-        const { error } = await supabase.from('providers').insert({
+        const payload = {
             full_name: form.full_name.trim(),
             email: form.email.trim() || null,
             phone: form.phone.trim() || null,
@@ -137,16 +175,30 @@ export default function ManageProvidersPage() {
             doc_type: form.doc_type || null,
             doc_number: form.doc_number.trim() || null,
             address: form.address.trim() || null,
+            available_days: availableDays,
+            available_time_slots: availableTimeSlots,
             avatar_url,
-            is_approved: false,
-        })
+        }
+
+        let error
+        if (editingProvider) {
+            // — EDIT MODE —
+            ; ({ error } = await supabase.from('providers').update(payload).eq('id', editingProvider.id))
+            if (!error) {
+                setProviders(prev => prev.map(p => p.id === editingProvider.id ? { ...p, ...payload } : p))
+            }
+        } else {
+            // — ADD MODE —
+            ; ({ error } = await supabase.from('providers').insert({ ...payload, is_approved: false }))
+        }
 
         if (error) {
-            setFormError('Failed to add provider: ' + error.message)
+            setFormError((editingProvider ? 'Failed to update' : 'Failed to add') + ' provider: ' + error.message)
         } else {
             setShowModal(false)
+            setEditingProvider(null)
             resetForm()
-            fetchProviders()
+            if (!editingProvider) fetchProviders()  // refresh list on add; edit updates inline
         }
         setFormLoading(false)
     }
@@ -154,9 +206,12 @@ export default function ManageProvidersPage() {
     function resetForm() {
         setForm(emptyForm)
         setOtherServiceType('')
+        setAvailableDays(DEFAULT_AVAILABLE_DAYS)
+        setAvailableTimeSlots(ALL_TIME_SLOTS)
         setImageFile(null)
         setImagePreview(null)
         setFormError('')
+        setEditingProvider(null)
     }
 
     function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -242,7 +297,7 @@ export default function ManageProvidersPage() {
                     <p className="text-sm text-slate-500 mt-1">Add and control service provider listings</p>
                 </div>
                 <Button
-                    onClick={() => { setShowModal(true); resetForm() }}
+                    onClick={() => { setEditingProvider(null); setShowModal(true); resetForm() }}
                     className="bg-indigo-600 hover:bg-indigo-700 rounded-xl gap-2"
                 >
                     <Plus className="h-4 w-4" /> Add Provider
@@ -289,7 +344,7 @@ export default function ManageProvidersPage() {
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Rate</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Added</th>
-                                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Del</th>
+                                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -367,15 +422,26 @@ export default function ManageProvidersPage() {
                                             {new Date(p.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </td>
 
-                                        {/* Delete */}
+                                        {/* Actions: Edit + Delete */}
                                         <td className="px-4 py-3 text-right">
-                                            <button
-                                                onClick={() => handleDelete(p.id)}
-                                                disabled={actionLoading === p.id}
-                                                className="p-1.5 rounded-lg border border-red-200 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </button>
+                                            <div className="flex items-center justify-end gap-1.5">
+                                                <button
+                                                    onClick={() => openEdit(p)}
+                                                    disabled={actionLoading === p.id}
+                                                    title="Edit provider"
+                                                    className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 transition-colors disabled:opacity-50"
+                                                >
+                                                    <Pencil className="h-3.5 w-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(p.id)}
+                                                    disabled={actionLoading === p.id}
+                                                    title="Delete provider"
+                                                    className="p-1.5 rounded-lg border border-red-200 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -413,18 +479,22 @@ export default function ManageProvidersPage() {
                 )}
             </div>
 
-            {/* ── Add Provider Modal ── */}
+            {/* ── Add / Edit Provider Modal ── */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-6 border-b border-slate-100 sticky top-0 bg-white rounded-t-3xl z-10">
                             <div>
-                                <h2 className="text-lg font-bold text-slate-800">Add New Provider</h2>
-                                <p className="text-xs text-slate-400 mt-0.5">They'll be added as Pending by default</p>
+                                <h2 className="text-lg font-bold text-slate-800">
+                                    {editingProvider ? 'Edit Provider' : 'Add New Provider'}
+                                </h2>
+                                <p className="text-xs text-slate-400 mt-0.5">
+                                    {editingProvider ? `Editing: ${editingProvider.full_name}` : "They'll be added as Pending by default"}
+                                </p>
                             </div>
                             <button
-                                onClick={() => setShowModal(false)}
+                                onClick={() => { setShowModal(false); setEditingProvider(null) }}
                                 className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                             >
                                 <X className="h-5 w-5 text-slate-500" />
@@ -590,6 +660,58 @@ export default function ManageProvidersPage() {
                                     />
                                 </div>
 
+                                {/* Available Days */}
+                                <div className="col-span-2">
+                                    <label className="text-xs font-semibold text-slate-500 mb-2 block">Available Days</label>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {DAY_NAMES.map((name, idx) => {
+                                            const checked = availableDays.includes(idx)
+                                            return (
+                                                <button
+                                                    key={name}
+                                                    type="button"
+                                                    onClick={() => setAvailableDays(d =>
+                                                        checked ? d.filter(x => x !== idx) : [...d, idx].sort()
+                                                    )}
+                                                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${checked
+                                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                                        : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-300'
+                                                        }`}
+                                                >
+                                                    {name}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 mt-1.5">These days will appear as selectable slots on the booking page.</p>
+                                </div>
+
+                                {/* Available Time Slots */}
+                                <div className="col-span-2">
+                                    <label className="text-xs font-semibold text-slate-500 mb-2 block">Available Time Slots</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {ALL_TIME_SLOTS.map(slot => {
+                                            const checked = availableTimeSlots.includes(slot)
+                                            return (
+                                                <button
+                                                    key={slot}
+                                                    type="button"
+                                                    onClick={() => setAvailableTimeSlots(s =>
+                                                        checked ? s.filter(x => x !== slot) : [...s, slot]
+                                                    )}
+                                                    className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border text-left transition-all ${checked
+                                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                                        : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-300'
+                                                        }`}
+                                                >
+                                                    {slot}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 mt-1.5">Deselect slots the provider never offers.</p>
+                                </div>
+
                             </div>
 
                             {formError && (
@@ -603,7 +725,7 @@ export default function ManageProvidersPage() {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={() => { setShowModal(false); setEditingProvider(null) }}
                                     className="flex-1 rounded-xl"
                                 >
                                     Cancel
@@ -616,7 +738,7 @@ export default function ManageProvidersPage() {
                                     {formLoading ? (
                                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                     ) : (
-                                        'Add Provider'
+                                        editingProvider ? 'Save Changes' : 'Add Provider'
                                     )}
                                 </Button>
                             </div>

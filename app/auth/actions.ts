@@ -19,6 +19,33 @@ export async function login(formData: FormData) {
         return redirect(`/auth/login?error=${encodeURIComponent(error.message)}`)
     }
 
+    // Get user role for smart redirect
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .single()
+
+    let role = profile?.role
+
+    // If profile role is missing, check the providers table directly (case-insensitive)
+    if (!role) {
+        const { data: provider } = await supabase
+            .from('providers')
+            .select('id')
+            .ilike('email', email)
+            .single()
+
+        if (provider) role = 'provider'
+    }
+
+    if (role === 'provider') {
+        return redirect('/provider')
+    }
+
+    if (role === 'admin') {
+        return redirect('/admin')
+    }
+
     return redirect('/')
 }
 

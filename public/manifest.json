@@ -5,8 +5,9 @@
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#4f46e5",
+    "theme_color": "#ffffff",
     "orientation": "portrait-primary",
+    "scope": "/",
     "categories": [
         "business",
         "lifestyle",
@@ -16,7 +17,8 @@
         {
             "src": "/favicon.ico",
             "sizes": "48x48",
-            "type": "image/x-icon"
+            "type": "image/x-icon",
+            "purpose": "any"
         },
         {
             "src": "/favicon.ico",

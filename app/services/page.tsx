@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,28 +21,54 @@ interface Provider {
 const CATEGORIES = ["All", "Electrician", "Plumber", "Cleaner", "Carpenter", "Painter", "Mechanic", "AC Repair", "Pest Control", "Other"]
 
 export default function ServicesPage() {
+    const searchParams = useSearchParams()
+    const router = useRouter()
     const [providers, setProviders] = useState<Provider[]>([])
     const [loading, setLoading] = useState(true)
-    const [category, setCategory] = useState("All")
-    const [search, setSearch] = useState("")
+
+    // Read category from URL — default to "All"
+    const categoryParam = searchParams.get('category') || 'All'
+    const [category, setCategory] = useState(categoryParam)
+    const [search, setSearch] = useState(searchParams.get('search') || '')
 
     const supabase = createClient()
 
+    // Sync URL → state when navigating to this page
     useEffect(() => {
-        fetchProviders()
-    }, [])
+        setCategory(searchParams.get('category') || 'All')
+        setSearch(searchParams.get('search') || '')
+    }, [searchParams])
+
+    useEffect(() => { fetchProviders() }, [])
 
     async function fetchProviders() {
         setLoading(true)
-        // Fetch only approved providers from the admin-managed providers table
         const { data } = await supabase
             .from('providers')
             .select('*')
             .eq('is_approved', true)
             .order('created_at', { ascending: false })
-
         if (data) setProviders(data as Provider[])
         setLoading(false)
+    }
+
+    function handleCategory(cat: string) {
+        setCategory(cat)
+        const params = new URLSearchParams(searchParams.toString())
+        if (cat === 'All') {
+            params.delete('category')
+        } else {
+            params.set('category', cat)
+        }
+        router.replace(`/services?${params.toString()}`, { scroll: false })
+    }
+
+    function handleSearch(val: string) {
+        setSearch(val)
+        const params = new URLSearchParams(searchParams.toString())
+        if (!val) params.delete('search')
+        else params.set('search', val)
+        router.replace(`/services?${params.toString()}`, { scroll: false })
     }
 
     const filteredProviders = providers.filter(p => {
@@ -69,7 +96,7 @@ export default function ServicesPage() {
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat}
-                                onClick={() => setCategory(cat)}
+                                onClick={() => handleCategory(cat)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${category === cat
                                     ? 'bg-indigo-600 text-white shadow-md'
                                     : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
@@ -84,7 +111,7 @@ export default function ServicesPage() {
                         <Input
                             placeholder="Search by name or service..."
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => handleSearch(e.target.value)}
                             className="pl-9 rounded-xl border-slate-200"
                         />
                     </div>
@@ -104,6 +131,9 @@ export default function ServicesPage() {
                         </div>
                         <h3 className="text-lg font-semibold text-slate-900">No providers found</h3>
                         <p className="text-slate-500">Try adjusting your filters or search terms.</p>
+                        <button onClick={() => handleCategory('All')} className="mt-4 text-sm text-indigo-600 hover:underline">
+                            Clear filters
+                        </button>
                     </div>
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

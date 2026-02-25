@@ -26,12 +26,12 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                        <ServiceCard icon={<Zap className="h-8 w-8" />} title="Electrician" href="/services/electrician" />
-                        <ServiceCard icon={<Droplets className="h-8 w-8" />} title="Plumbing" href="/services/plumbing" />
-                        <ServiceCard icon={<Sparkles className="h-8 w-8" />} title="Cleaning" href="/services/cleaning" />
-                        <ServiceCard icon={<Car className="h-8 w-8" />} title="Car Wash" href="/services/car-wash" />
-                        <ServiceCard icon={<Hammer className="h-8 w-8" />} title="Repairs" href="/services/repairs" />
-                        <ServiceCard icon={<Paintbrush className="h-8 w-8" />} title="Painting" href="/services/painting" />
+                        <ServiceCard icon={<Zap className="h-8 w-8" />} title="Electrician" href="/services?category=Electrician" />
+                        <ServiceCard icon={<Droplets className="h-8 w-8" />} title="Plumbing" href="/services?category=Plumber" />
+                        <ServiceCard icon={<Sparkles className="h-8 w-8" />} title="Cleaning" href="/services?category=Cleaner" />
+                        <ServiceCard icon={<Car className="h-8 w-8" />} title="Car Wash" href="/services?category=Mechanic" />
+                        <ServiceCard icon={<Hammer className="h-8 w-8" />} title="Repairs" href="/services?category=Carpenter" />
+                        <ServiceCard icon={<Paintbrush className="h-8 w-8" />} title="Painting" href="/services?category=Painter" />
                     </div>
                 </div>
             </section>

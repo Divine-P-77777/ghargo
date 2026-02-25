@@ -39,6 +39,46 @@ create policy "Authenticated users can manage providers."
   on public.providers for all
   using ( auth.role() = 'authenticated' );
 
+-- ============================================================
+-- BOOKINGS: extra admin read policy
+-- The schema only allows role='admin' from profiles, but our
+-- admin is email-whitelisted. Add this so authenticated admins
+-- can read all bookings from the admin panel.
+-- ============================================================
+drop policy if exists "Authenticated admins can view all bookings." on public.bookings;
+create policy "Authenticated admins can view all bookings."
+  on public.bookings for select
+  using ( auth.role() = 'authenticated' );
+
+-- ============================================================
+-- AVAILABLE DAYS: provider working-day preferences
+-- Stored as integer[] where 0=Sun,1=Mon,...,6=Sat
+-- Default Mon-Sat = {1,2,3,4,5,6}
+-- ============================================================
+alter table public.providers
+  add column if not exists available_days integer[]
+  default array[1,2,3,4,5,6];
+
+-- Available time slots: which time windows the provider works
+-- null / empty = all slots available
+alter table public.providers
+  add column if not exists available_time_slots text[];
+
+-- ============================================================
+-- OTP VERIFICATION: provider confirms arrival with a 6-digit code
+-- otp        → generated at booking time, shown to user
+-- otp_verified → true after provider enters correct OTP
+-- ============================================================
+alter table public.bookings
+  add column if not exists otp text;
+
+alter table public.bookings
+  add column if not exists otp_verified boolean default false;
+
+
+
+
+
 
 -- ============================================================
 -- STORAGE BUCKET + POLICIES for provider images

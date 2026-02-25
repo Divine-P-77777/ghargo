@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 
 export function Footer() {
     return (
-        <footer className="bg-slate-50 border-t border-slate-200 pt-16 pb-8 hidden md:block">
+        <footer className="footer-gradient border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pt-16 pb-8 hidden md:block">
             <div className="container max-w-screen-2xl px-4 md:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* Brand Column */}

@@ -3,7 +3,7 @@
 import { useLanguage } from "@/components/providers/LanguageProvider"
 import { Button } from "@/components/ui/button"
 import { i18n, type Locale } from "@/i18n-config"
-import { Globe } from "lucide-react"
+import { Languages } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,7 +24,7 @@ export function LanguageSwitcher() {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full hover:bg-indigo-50 hover:text-indigo-600 transition-all">
-                    <Globe className="h-[1.2rem] w-[1.2rem]" />
+                    <Languages className="h-[1.2rem] w-[1.2rem]" />
                     <span className="sr-only">Toggle language</span>
                 </Button>
             </DropdownMenuTrigger>

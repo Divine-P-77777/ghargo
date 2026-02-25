@@ -4,16 +4,19 @@ import { useAuth } from "@/components/providers/AuthProvider"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Calendar, Clock, MapPin, User, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react"
+import { Calendar, Clock, MapPin, User, CheckCircle, XCircle, AlertCircle, Loader2, Smartphone } from "lucide-react"
 import Link from "next/link"
 
 interface Booking {
     id: string
     service_type: string
-    status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+    status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
     booking_date: string
+    time_slot?: string
     address?: string
     notes?: string
+    otp?: string
+    otp_verified?: boolean
     profiles: {
         full_name: string
         avatar_url: string
@@ -97,7 +100,7 @@ export default function BookingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12">
+        <div className="min-h-screen bg-slate-50 py-20">
             <div className="container mx-auto px-4 max-w-4xl">
                 <h1 className="text-3xl font-bold text-slate-900 mb-8">My Bookings</h1>
 
@@ -143,7 +146,7 @@ export default function BookingsPage() {
                                     <div className="grid sm:grid-cols-2 gap-3 pt-2">
                                         <div className="flex items-center gap-2 text-sm text-slate-600">
                                             <Clock className="h-4 w-4 text-slate-400" />
-                                            {new Date(booking.booking_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {booking.time_slot || 'Time not set'}
                                         </div>
                                         {booking.address && (
                                             <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -152,6 +155,22 @@ export default function BookingsPage() {
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* OTP UI for user */}
+                                    {(booking.status === 'pending' || booking.status === 'confirmed' || booking.status === 'in_progress') && (
+                                        <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 mt-4">
+                                            <Smartphone className="h-5 w-5 text-indigo-600 shrink-0" />
+                                            <div>
+                                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Share this OTP on arrival</p>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-lg font-bold text-indigo-700 tracking-widest">{booking.otp || '------'}</span>
+                                                    {booking.otp_verified && (
+                                                        <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">VERIFIED ✓</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Actions */}
