@@ -36,9 +36,17 @@ export async function proxy(request: NextRequest) {
     // RBAC Logic
     const pathname = request.nextUrl.pathname
 
-    // 1. Protected Admin Routes
-    if (pathname.includes('/admin') && user?.user_metadata?.role !== 'admin') {
-        return NextResponse.redirect(new URL('/', request.url))
+    // 1. Protected Admin Routes — email whitelist
+    const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean)
+
+    if (pathname.includes('/admin')) {
+        const userEmail = user?.email?.toLowerCase() ?? ''
+        if (!userEmail || !adminEmails.includes(userEmail)) {
+            return NextResponse.redirect(new URL('/', request.url))
+        }
     }
 
     // 2. Protected Provider Routes
@@ -49,6 +57,11 @@ export async function proxy(request: NextRequest) {
     // 3. Protected Dashboard Routes (General Auth)
     if (pathname.includes('/dashboard') && !user) {
         return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
+
+    // 4. Block direct provider self-registration — admin-only
+    if (pathname === '/auth/join-pro') {
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
     return supabaseResponse

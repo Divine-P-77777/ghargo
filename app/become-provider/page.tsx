@@ -21,18 +21,15 @@ export default function BecomeProviderPage() {
                             Join thousands of skilled professionals finding new customers every day. Zero marketing fees. Direct payments. Total freedom.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Link href="/auth/join-pro">
-                                <Button size="lg" className="h-14 px-8 text-lg rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-500/20 w-full sm:w-auto">
-                                    Register as Professional
-                                    <ArrowRight className="ml-2 h-5 w-5" />
-                                </Button>
-                            </Link>
-                            <Link href="/auth/login">
-                                <Button variant="outline" size="lg" className="h-14 px-8 text-lg rounded-xl border-slate-200 hover:bg-white hover:text-indigo-700 w-full sm:w-auto">
-                                    Provider Login
-                                </Button>
-                            </Link>
+                            <a
+                                href="mailto:dynamicphillic77777@gmail.com?subject=Provider Registration Request"
+                                className="inline-flex items-center justify-center gap-2 h-14 px-8 text-lg rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-xl shadow-indigo-500/20 transition-colors"
+                            >
+                                Apply via Email
+                                <ArrowRight className="h-5 w-5" />
+                            </a>
                         </div>
+                        <p className="text-sm text-slate-400 pt-2">Provider accounts are created by our admin team. Email us to get started.</p>
                         <div className="flex items-center gap-4 text-sm text-slate-500 pt-4">
                             <div className="flex -space-x-2">
                                 {[1, 2, 3, 4].map((i) => (
@@ -148,11 +145,12 @@ export default function BecomeProviderPage() {
                                 <Step number="03" title="Start Earning" description="Once approved, download the partner app, customize your profile, and start accepting bookings immediately." />
                             </div>
 
-                            <Link href="/auth/join-pro" className="inline-block">
-                                <Button size="lg" className="rounded-xl h-12 px-8 bg-slate-900 text-white hover:bg-slate-800">
-                                    Start Your Application
-                                </Button>
-                            </Link>
+                            <a
+                                href="mailto:dynamicphillic77777@gmail.com?subject=Provider Registration Request"
+                                className="inline-flex items-center gap-2 h-12 px-8 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-medium text-sm transition-colors"
+                            >
+                                Apply via Email
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -177,11 +175,12 @@ export default function BecomeProviderPage() {
                     <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
                         Join the fastest-growing home services platform in Guwahati today.
                     </p>
-                    <Link href="/auth/join-pro" className="inline-block">
-                        <Button size="lg" className="h-14 px-10 text-lg rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold shadow-2xl">
-                            Join Now for Free
-                        </Button>
-                    </Link>
+                    <a
+                        href="mailto:dynamicphillic77777@gmail.com?subject=Provider Registration Request"
+                        className="inline-flex items-center gap-2 h-14 px-10 text-lg rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold shadow-2xl transition-colors"
+                    >
+                        Contact Us to Apply
+                    </a>
                 </div>
             </section>
         </div>

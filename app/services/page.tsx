@@ -10,14 +10,14 @@ import Link from "next/link"
 interface Provider {
     id: string
     full_name: string
-    avatar_url: string
-    service_type: string
-    hourly_rate: number
-    bio: string
-    is_verified: boolean
+    avatar_url: string | null
+    service_type: string | null
+    hourly_rate: number | null
+    bio: string | null
+    is_approved: boolean
 }
 
-const CATEGORIES = ["All", "Electrician", "Plumber", "Cleaner", "Carpenter", "Painter", "Mechanic"]
+const CATEGORIES = ["All", "Electrician", "Plumber", "Cleaner", "Carpenter", "Painter", "Mechanic", "AC Repair", "Pest Control", "Other"]
 
 export default function ServicesPage() {
     const [providers, setProviders] = useState<Provider[]>([])
@@ -33,16 +33,14 @@ export default function ServicesPage() {
 
     async function fetchProviders() {
         setLoading(true)
-        // Fetch verified providers
-        const { data, error } = await supabase
-            .from('profiles')
+        // Fetch only approved providers from the admin-managed providers table
+        const { data } = await supabase
+            .from('providers')
             .select('*')
-            .eq('role', 'provider')
-            .eq('is_verified', true)
+            .eq('is_approved', true)
+            .order('created_at', { ascending: false })
 
-        if (data) {
-            setProviders(data as Provider[])
-        }
+        if (data) setProviders(data as Provider[])
         setLoading(false)
     }
 
@@ -55,7 +53,7 @@ export default function ServicesPage() {
     })
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12">
+        <div className="min-h-screen py-20 bg-slate-50">
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header */}
                 <div className="text-center max-w-2xl mx-auto mb-12">
@@ -73,15 +71,14 @@ export default function ServicesPage() {
                                 key={cat}
                                 onClick={() => setCategory(cat)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${category === cat
-                                        ? 'bg-indigo-600 text-white shadow-md'
-                                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                                    ? 'bg-indigo-600 text-white shadow-md'
+                                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                                     }`}
                             >
                                 {cat}
                             </button>
                         ))}
                     </div>
-
                     <div className="relative w-full md:w-64">
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                         <Input
@@ -126,7 +123,7 @@ function ProviderCard({ provider }: { provider: Provider }) {
             <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden">
+                        <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0">
                             {provider.avatar_url ? (
                                 <img src={provider.avatar_url} alt={provider.full_name} className="w-full h-full object-cover" />
                             ) : (
@@ -139,7 +136,7 @@ function ProviderCard({ provider }: { provider: Provider }) {
                             <h3 className="font-bold text-slate-900 text-lg group-hover:text-indigo-600 transition-colors">
                                 {provider.full_name}
                             </h3>
-                            <p className="text-sm font-medium text-emerald-600 flex items-center gap-1">
+                            <p className="text-sm font-medium text-emerald-600">
                                 {provider.service_type || "General Provider"}
                             </p>
                             <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
@@ -147,11 +144,9 @@ function ProviderCard({ provider }: { provider: Provider }) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                        <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg">
-                            <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
-                            <span className="text-xs font-bold text-amber-700">4.9</span>
-                        </div>
+                    <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg shrink-0">
+                        <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                        <span className="text-xs font-bold text-amber-700">4.9</span>
                     </div>
                 </div>
 

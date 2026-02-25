@@ -5,23 +5,32 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, Shield, ChevronLeft } from "lucide-react"
+import { LayoutDashboard, Users, Shield, ChevronLeft, UserPlus } from "lucide-react"
 
 const adminLinks = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/providers", label: "Providers", icon: Users },
+    { href: "/admin/manage", label: "Manage Providers", icon: UserPlus },
+    { href: "/admin/providers", label: "Verification (old)", icon: Users },
 ]
+
+// Allowed admin emails from env (NEXT_PUBLIC so the client bundle can read it)
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth()
     const router = useRouter()
     const pathname = usePathname()
 
+    const isAdmin = !!user && ADMIN_EMAILS.includes(user.email?.toLowerCase() ?? '')
+
     useEffect(() => {
-        if (!loading && (!user || user.user_metadata?.role !== 'admin')) {
+        if (!loading && !isAdmin) {
             router.push('/')
         }
-    }, [user, loading, router])
+    }, [user, loading, isAdmin, router])
 
     if (loading) {
         return (
@@ -34,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )
     }
 
-    if (!user || user.user_metadata?.role !== 'admin') {
+    if (!isAdmin) {
         return null
     }
 
@@ -58,8 +67,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 key={link.href}
                                 href={link.href}
                                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
-                                        ? 'bg-indigo-50 text-indigo-700 shadow-sm'
-                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-indigo-50 text-indigo-700 shadow-sm'
+                                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                     }`}
                             >
                                 <link.icon className={`h-4 w-4 ${isActive ? 'text-indigo-600' : ''}`} />
@@ -89,8 +98,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             key={link.href}
                             href={link.href}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${isActive
-                                    ? 'bg-indigo-50 text-indigo-700'
-                                    : 'text-slate-500 hover:bg-slate-50'
+                                ? 'bg-indigo-50 text-indigo-700'
+                                : 'text-slate-500 hover:bg-slate-50'
                                 }`}
                         >
                             <link.icon className="h-3.5 w-3.5" />

@@ -82,7 +82,7 @@ export default function AdminDashboard() {
     ]
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 py-20">
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
